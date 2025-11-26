@@ -21,7 +21,6 @@
 from __future__ import unicode_literals
 
 import os
-import yaml
 import base64
 import random
 import json
@@ -41,6 +40,7 @@ from ckan import model
 
 from ckanext.oauth2 import constants
 from ckanext.oauth2.db import UserToken
+from ckanext.oauth2.helpers import load_oauth2_config
 
 log = logging.getLogger(__name__)
 
@@ -68,32 +68,26 @@ class OAuth2Helper(object):
     def __init__(self, provider="github"):
         self.provider = provider
 
-        yaml_file = toolkit.config.get(
-            "ckan.oauth2.config_path",
-            os.path.join(os.path.dirname(__file__), "..", "oauth_config.yaml"),
+        full_oauth_config = load_oauth2_config()
+        oauth_cofig = list(
+            filter(lambda x: x["name"] == self.provider, full_oauth_config["providers"])
+        )[0]
+        self.client_id = oauth_cofig["client_id"]
+        self.client_secret = oauth_cofig["client_secret"]
+        self.authorization_endpoint = oauth_cofig["authorization_endpoint"]
+        self.token_endpoint = oauth_cofig["token_endpoint"]
+        self.profile_api_url = oauth_cofig["profile_api_url"]
+        self.profile_api_user_field = oauth_cofig["profile_api_user_field"]
+        self.profile_api_mail_field = oauth_cofig["profile_api_mail_field"]
+        self.scope = "%s" % oauth_cofig["scope"]
+        self.profile_api_fullname_field = oauth_cofig.get(
+            "profile_api_fullname_field", None
         )
-
-        with open(yaml_file) as f:
-            oauth_cofig = yaml.load(f, Loader=yaml.FullLoader)
-            oauth_cofig = list(
-                filter(lambda x: x["name"] == self.provider, oauth_cofig["providers"])
-            )[0]
-            self.client_id = oauth_cofig["client_id"]
-            self.client_secret = oauth_cofig["client_secret"]
-            self.authorization_endpoint = oauth_cofig["authorization_endpoint"]
-            self.token_endpoint = oauth_cofig["token_endpoint"]
-            self.profile_api_url = oauth_cofig["profile_api_url"]
-            self.profile_api_user_field = oauth_cofig["profile_api_user_field"]
-            self.profile_api_mail_field = oauth_cofig["profile_api_mail_field"]
-            self.scope = "%s" % oauth_cofig["scope"]
-            self.profile_api_fullname_field = oauth_cofig.get(
-                "profile_api_fullname_field", None
-            )
-            self.profile_api_groupmembership_field = oauth_cofig.get(
-                "profile_api_groupmembership_field", None
-            )
-            self.sysadmin_group_name = oauth_cofig.get("sysadmin_group_name", None)
-            self.prompt = oauth_cofig.get("prompt", "consent")
+        self.profile_api_groupmembership_field = oauth_cofig.get(
+            "profile_api_groupmembership_field", None
+        )
+        self.sysadmin_group_name = oauth_cofig.get("sysadmin_group_name", None)
+        self.prompt = oauth_cofig.get("prompt", "consent")
 
         self.verify_https = os.environ.get("OAUTHLIB_INSECURE_TRANSPORT", "") == ""
         if self.verify_https and os.environ.get("REQUESTS_CA_BUNDLE", "").strip() != "":

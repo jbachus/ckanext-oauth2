@@ -24,21 +24,21 @@ from setuptools import setup, find_packages
 
 PYPI_RST_FILTERS = (
     # Remove travis ci badge
-    (r'.*travis-ci\.org/.*', ''),
+    (r".*travis-ci\.org/.*", ""),
     # Remove pypip.in badges
-    (r'.*pypip\.in/.*', ''),
-    (r'.*crate\.io/.*', ''),
-    (r'.*coveralls\.io/.*', ''),
+    (r".*pypip\.in/.*", ""),
+    (r".*crate\.io/.*", ""),
+    (r".*coveralls\.io/.*", ""),
 )
 
 
 def rst(filename):
-    '''
+    """
     Load rst file and sanitize it for PyPI.
     Remove unsupported github tags:
      - code-block directive
      - travis ci build badge
-    '''
+    """
     content = open(filename).read()
     for regex, replacement in PYPI_RST_FILTERS:
         content = re.sub(regex, replacement, content)
@@ -52,49 +52,40 @@ def rst(filename):
 # ))
 
 setup(
-    name='ckanext-oauth2',
-    long_description='''
+    name="ckanext-oauth2",
+    version="2.11.4",
+    long_description="""
     The OAuth2 extension allows site visitors to login through an OAuth2 server.
-    ''',
-    keywords='CKAN, OAuth2',
-    author='Aitor Magán',
-    author_email='amagan@conwet.com',
-    url='https://github.com/conwetlab/ckanext-oauth2',
-    license='',
-    packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
-    namespace_packages=['ckanext'],
+    """,
+    keywords="CKAN, OAuth2",
+    author="Aitor Magán",
+    author_email="amagan@conwet.com",
+    url="https://github.com/conwetlab/ckanext-oauth2",
+    license="",
+    packages=find_packages(exclude=["ez_setup", "examples", "tests"]),
+    namespace_packages=["ckanext"],
     include_package_data=True,
     zip_safe=False,
-    setup_requires=[
-        'nose>=1.3.0'
-    ],
-    install_requires=[
-        'requests-oauthlib==2.0.*',
-        'pyjwt==2.8.0'
-    ],
-    tests_require=[
-        'parameterized',
-        'selenium==3.5.0'
-    ],
-    test_suite='nosetests',
+    setup_requires=["nose>=1.3.0"],
+    install_requires=["requests-oauthlib==2.0.*", "pyjwt==2.8.0", "PyYAML"],
+    tests_require=["parameterized", "selenium==3.5.0"],
+    test_suite="nosetests",
     entry_points={
-        'ckan.plugins': [
-            'oauth2 = ckanext.oauth2.plugin:OAuth2Plugin',
+        "ckan.plugins": [
+            "oauth2 = ckanext.oauth2.plugin:OAuth2Plugin",
         ],
-        'nose.plugins': [
-            'pylons = pylons.test:PylonsPlugin'
-        ]
+        "nose.plugins": ["pylons = pylons.test:PylonsPlugin"],
     },
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Environment :: Web Environment",
-        'Intended Audience :: Developers',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python',
-        'Topic :: Internet :: WWW/HTTP :: Session',
-        'Topic :: Internet :: WWW/HTTP :: WSGI :: Middleware',
-        'Topic :: Software Development :: Libraries :: Python Modules',
-        'Topic :: System :: Systems Administration :: Authentication/Directory',
+        "Intended Audience :: Developers",
+        "Programming Language :: Python :: 2",
+        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python",
+        "Topic :: Internet :: WWW/HTTP :: Session",
+        "Topic :: Internet :: WWW/HTTP :: WSGI :: Middleware",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+        "Topic :: System :: Systems Administration :: Authentication/Directory",
     ],
 )

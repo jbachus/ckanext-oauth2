@@ -21,7 +21,6 @@
 from __future__ import unicode_literals
 
 import os
-import yaml
 import logging
 
 from functools import partial
@@ -33,29 +32,9 @@ from ckan.plugins import toolkit
 from ckanext.oauth2 import oauth2
 from ckanext.oauth2 import db
 from ckanext.oauth2 import controller
+from ckanext.oauth2 import helpers
 
 log = logging.getLogger(__name__)
-
-
-def _get_sso_options():
-    yaml_file = toolkit.config.get(
-        "ckan.oauth2.config_path",
-        os.path.join(os.path.dirname(__file__), "..", "oauth_config.yaml"),
-    )
-    with open(yaml_file) as f:
-        oauth_cofig = yaml.load(f, Loader=yaml.FullLoader)
-        provider_list = []
-        for provider in oauth_cofig["providers"]:
-            provider_list.append(provider["name"])
-    return provider_list
-
-
-def _user_is_sso_user():
-    user_name = toolkit.c.userobj.name
-    user = db.UserToken.by_user_name(user_name=user_name)
-    if user:
-        return True
-    return False
 
 
 class OAuth2Plugin(plugins.SingletonPlugin):
@@ -71,8 +50,8 @@ class OAuth2Plugin(plugins.SingletonPlugin):
     # ITemplateHelpers
     def get_helpers(self):
         return {
-            "sso_login_options": _get_sso_options,
-            "user_is_sso_user": _user_is_sso_user,
+            "sso_login_options": helpers.get_sso_options,
+            "user_is_sso_user": helpers.user_is_sso_user,
         }
 
     def get_blueprint(self):
