@@ -53,7 +53,7 @@ def rst(filename):
 
 setup(
     name="ckanext-oauth2",
-    version="2.11.4.1",
+    version="2.11.4.post1",
     long_description="""
     The OAuth2 extension allows site visitors to login through an OAuth2 server.
     """,
