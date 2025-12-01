@@ -1,2 +1,3 @@
 recursive-include ckanext/oauth2/templates *
+recursive-include ckanext/oauth2/migration *
 include README.md
