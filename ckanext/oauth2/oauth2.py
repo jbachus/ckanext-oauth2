@@ -184,7 +184,7 @@ class OAuth2Helper(object):
         if self.jwt_enable:
             access_token = bytes(token["access_token"])
             user_data = jwt.decode(access_token, verify=False)
-            user = self.user_json(user_data)
+            user, is_new = self.user_json(user_data)
         else:
             try:
                 if self.legacy_idm:
@@ -221,11 +221,36 @@ class OAuth2Helper(object):
                     profile_response.raise_for_status()
             else:
                 user_data = profile_response.json()
-                user = self.user_json(user_data)
+                user, is_new = self.user_json(user_data)
 
         # Save the user in the database
         model.Session.add(user)
         model.Session.commit()
+
+        if is_new:
+            default_org = toolkit.config.get("ckan.oauth2.default_organization")
+            if default_org:
+                try:
+                    context = {
+                        "model": model,
+                        "session": model.Session,
+                        "user": "sysadmin",
+                        "ignore_auth": True,
+                    }
+                    toolkit.get_action("organization_member_create")(
+                        context,
+                        {"id": default_org, "username": user.name, "role": "member"},
+                    )
+                    log.info(
+                        "Added user %s to default organization %s"
+                        % (user.name, default_org)
+                    )
+                except Exception as e:
+                    log.error(
+                        "Failed to add user %s to default organization %s: %s"
+                        % (user.name, default_org, e)
+                    )
+
         model.Session.remove()
 
         return user
@@ -243,6 +268,7 @@ class OAuth2Helper(object):
         # Some providers, like Google and FIWARE only allows one account per email
         user = None
         users = model.User.by_email(email)
+        is_new = False
 
         if users:
             user = users
@@ -250,6 +276,7 @@ class OAuth2Helper(object):
 
         # If the user does not exist, we have to create it...
         if not user:
+            is_new = True
             user = model.User(email=email)
             # if user name is already exists, add a random string to the end
             is_username_availabe = model.User.check_name_available(user_name)
@@ -280,7 +307,7 @@ class OAuth2Helper(object):
                 in user_data[self.profile_api_groupmembership_field]
             )
 
-        return user
+        return user, is_new
 
     def login_user(self, user):
         """
