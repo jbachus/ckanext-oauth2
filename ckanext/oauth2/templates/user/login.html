@@ -1,13 +1,17 @@
 {% ckan_extends %}
 
 {% block form %}
-{{ super() }}
+{% if h.allow_userpass_login() %}
+    {{ super() }}
+{% endif %}
 {% block login_button %}
+    {% if h.allow_userpass_login() %}
     <div class="d-flex align-items-center text-muted my-3">
         <hr class="flex-grow-1">
             <span class="px-2">or</span>
         <hr class="flex-grow-1">
     </div>
+    {% endif %}
     {% for provider in h.sso_login_options() %}
         <a href="{{ h.url_for('oauth2.login', provider=provider) }}" class="btn btn-primary btn-block">
             <i class="fa-brands fa-{{ provider }}"></i> {{ _('Login with %(provider)s', provider=provider | capitalize) }}

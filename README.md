@@ -15,6 +15,11 @@ The OAuth2 extension allows site visitors to login through an OAuth2 server.
 2. [Starting CKAN over HTTPs](https://github.com/conwetlab/ckanext-oauth2/wiki/Starting-CKAN-over-HTTPs)
 3. [How it works?](https://github.com/conwetlab/ckanext-oauth2/wiki/How-it-works%3F)
 
+## Optional configuration
+
+- `ckan.oauth2.default_organization`: when set, newly created users are added to this organization automatically.
+- `ckan.oauth2.default_role`: role assigned to the new user in the default organization. Defaults to `member`.
+- `ckan.oauth2.allow_userpass_login`: if `true`, shows CKAN's username/password login form alongside the SSO buttons on the login page.
 
 
 # Multiple SSO 

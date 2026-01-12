@@ -25,6 +25,11 @@ ckan.oauth2.profile_api_user_field = JSON_FIELD_TO_FIND_THE_USER_IDENTIFIER
 ckan.oauth2.profile_api_fullname_field = JSON_FIELD_TO_FIND_THE_USER_FULLNAME
 ckan.oauth2.profile_api_mail_field = JSON_FIELD_TO_FIND_THE_USER_MAIL
 ckan.oauth2.authorization_header = OAUTH2_HEADER
+ckan.oauth2.default_organization = DEFAULT_ORGANIZATION_ID_OR_NAME
+# Optional; defaults to "member" if not set
+ckan.oauth2.default_role = member
+# Optional; when true shows CKAN's native username/password form alongside SSO buttons
+ckan.oauth2.allow_userpass_login = false
 ```
 
 > **Note**: In case you are using FIWARE as OAuth2 provider, this is the concrete OAuth2 configuration you should use (e.g. using FIWARE Lab):
@@ -87,6 +92,8 @@ export OAUTHLIB_INSECURE_TRANSPORT=True
 ```
 * The callback URL that you should set on your OAuth 2.0 is: `https://YOUR_CKAN_INSTANCE/oauth2/callback`, replacing `YOUR_CKAN_INSTANCE` by the machine and port where your CKAN instance is running.
 * If you are connecting to FIWARE KeyRock v6 or v5, you have to set `ckan.oauth2.legacy_idm` to `true`.
+* To automatically add newly created users to an organization, set `ckan.oauth2.default_organization` and optionally `ckan.oauth2.default_role` (member/editor/admin). If unset, no automatic membership is created. The default role is `member`.
+* To expose the standard CKAN username/password form alongside SSO buttons on the login page, set `ckan.oauth2.allow_userpass_login = true`.
 
 Refer to this document for integration between CKAN and WSO2-IS IDM using oauth2 with settings:
 https://github.com/conwetlab/ckanext-oauth2/wiki/Integration-between-WSO2-IS-and-CKAN-using-Oauth2

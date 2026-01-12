@@ -229,6 +229,8 @@ class OAuth2Helper(object):
 
         if is_new:
             default_org = toolkit.config.get("ckan.oauth2.default_organization")
+            # This can be member (default), editor, or admin
+            default_role = toolkit.config.get("ckan.oauth2.default_role", "member")
             if default_org:
                 try:
                     context = {
@@ -239,7 +241,11 @@ class OAuth2Helper(object):
                     }
                     toolkit.get_action("organization_member_create")(
                         context,
-                        {"id": default_org, "username": user.name, "role": "member"},
+                        {
+                            "id": default_org,
+                            "username": user.name,
+                            "role": default_role,
+                        },
                     )
                     log.info(
                         "Added user %s to default organization %s"

@@ -54,3 +54,8 @@ def user_is_sso_user():
     if user:
         return True
     return False
+
+
+def allow_userpass_login():
+    """Return True when username/password login should be shown alongside SSO."""
+    return toolkit.asbool(toolkit.config.get("ckan.oauth2.allow_userpass_login", False))

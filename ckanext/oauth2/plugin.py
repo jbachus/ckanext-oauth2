@@ -52,13 +52,13 @@ class OAuth2Plugin(plugins.SingletonPlugin):
         return {
             "sso_login_options": helpers.get_sso_options,
             "user_is_sso_user": helpers.user_is_sso_user,
+            "allow_userpass_login": helpers.allow_userpass_login,
         }
 
     def get_blueprint(self):
         return controller.get_blueprint()
 
     def identify(self):
-
         def _refresh_and_save_token(user_name):
             user = db.UserToken.by_user_name(user_name=user_name)
             oauth2helper = oauth2.OAuth2Helper(user.provider)
